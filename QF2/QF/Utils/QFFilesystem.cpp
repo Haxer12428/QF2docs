@@ -15,6 +15,15 @@
 			{
 				return QF::Utils::Transform::g_StringFromStringVector(m_Buffer, _LineEnding);
 			}
+		/*========================= Info =========================*/
+			QF::Utils::Filesystem::Open::Info::Info(const long& _Lines, const long& _Chars)
+				: m_Chars{ _Chars }, m_Lines{ _Lines } {};
+
+			const long& QF::Utils::Filesystem::Open::Info::g_Lines() const 
+			{ return m_Lines; };
+
+			const long& QF::Utils::Filesystem::Open::Info::g_Chars() const 
+			{ return m_Chars; };
 		/* Constructor */
 		QF::Utils::Filesystem::Open::Open(const std::filesystem::path& _Path) 
 			: m_Path{_Path}
@@ -26,7 +35,7 @@
 
 		void QF::Utils::Filesystem::Open::func_FileCannotBeOpened() const
 		{
-			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::ERROR, __FUNCTION__,
+			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::CRITICAL_ERROR, __FUNCTION__,
 				std::format("File cannot be opened: {}", m_Path.string()));
 		}
 
@@ -42,7 +51,7 @@
 				m_Path, std::ios::in
 			);
 			
-			/* Error with file */
+			/* CRITICAL_ERROR with file */
 			if (!_File) { func_FileCannotBeOpened(); return Buffer{}; };
 
 			/* Collect buffer */
@@ -90,7 +99,7 @@
 			/* Open */
 			std::fstream _File;
 
-			/* Error while opening */
+			/* CRITICAL_ERROR while opening */
 			if (!_File) { func_FileCannotBeOpened(); return false; };
 
 			for (int _Tries = 0; _Tries < 5; _Tries++)
@@ -112,9 +121,28 @@
 			}
 
 			/* Log failure */
-			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::ERROR, __FUNCTION__,
+			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::CRITICAL_ERROR, __FUNCTION__,
 				std::format("Failed to write buffer in all attempts, file: ", m_Path.string())
 				);
 			/* Return false to inform about failure*/
 			return false; 
+		}
+
+		const QF::Utils::Filesystem::Open::Info QF::Utils::Filesystem::Open::g_Info() const
+		{
+			/* Get buffer from file in vector */
+			const std::vector<std::string> _BufferVec = g_Buffer().g_Vector();
+
+			/* Structure info */
+			long _Lines = _BufferVec.size();
+			long _Chars = 0; 
+
+			/* Get Chars */
+			for (const std::string& _Segment : _BufferVec) 
+			{
+				_Chars += _Segment.length();
+			}
+
+			/* Return valid struct */
+			return Open::Info{ _Lines, _Chars };
 		}

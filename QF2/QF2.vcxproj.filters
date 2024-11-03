@@ -41,7 +41,7 @@
     <ClCompile Include="QF\UI\QFElement.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="QF\UI\QFWindow.cpp">
+    <ClCompile Include="QF\UI\Window\QFWindow.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="QF\UI\QFApp.cpp">
@@ -51,6 +51,21 @@
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
     <ClCompile Include="QF\UI\QFEventSystem.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="QF\UI\SimpleDC.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="QF\UI\Window\QFWindowTitlebar.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="QF\Utils\Math.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="QF\UI\QFHelpers.cpp">
+      <Filter>Pliki źródłowe</Filter>
+    </ClCompile>
+    <ClCompile Include="QF\Utils\QFSystem.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>

@@ -13,7 +13,7 @@
 			if (!on_Init()) throw std::exception("failed to intialize application");
 		}
 		catch (...) {
-			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::ERROR, __FUNCTION__,
+			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::CRITICAL_ERROR, __FUNCTION__,
 				"Failed to initialize app: virtual bool QF::UI::App::on_Init"
 			);
 		}
@@ -61,7 +61,7 @@
 		delete _Child;
 
 		/* Log deletion */
-		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::MESSAGE, __FUNCTION__,
+		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
 			"Successfully closed window."
 			);
 	}
@@ -90,7 +90,7 @@
 	void QF::UI::App::hk_MainLoop()
 	{
 		/* Log initialization of this function */
-		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::MESSAGE, __FUNCTION__,
+		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
 			"Initialized");
 
 		/* Actuall main loop

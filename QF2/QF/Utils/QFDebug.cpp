@@ -110,9 +110,9 @@ std::once_flag QF::Utils::Debug::m_InitializerInitOnceFlag;
 
 	void QF::Utils::Debug::hdl_InsertLogDataToFileCannotBeOpened() const
 	{
-		LogHint _CurrentHint = LogHint::ERROR;
+		LogHint _CurrentHint = LogHint::CRITICAL_ERROR;
 
-		/* Log error */
+		/* Log CRITICAL_ERROR */
 		func_InsertPrint(g_InsertDataToPrint(
 			g_InsertDebugData(
 				m_LogHintMap.find(_CurrentHint)->second, __FUNCTION__
@@ -154,7 +154,7 @@ std::once_flag QF::Utils::Debug::m_InitializerInitOnceFlag;
 
 		switch (_Hint)
 		{
-		case QF::Utils::Debug::LogHint::ERROR:
+		case QF::Utils::Debug::LogHint::CRITICAL_ERROR:
 			return "\033[31m";
 		case QF::Utils::Debug::LogHint::WARNING:
 			return "\033[93m";

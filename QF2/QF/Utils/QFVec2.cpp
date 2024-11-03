@@ -22,7 +22,8 @@ std::unordered_map < QF::Utils::Vec2::Hint, QF::Utils::Vec2::HintValue> QF::Util
 		1 value for both axis 
 	*/
 	QF::Utils::Vec2::Vec2(const float _singular) : m_x{ _singular }, m_y{ _singular } {};
-
+	/* Other object */
+	QF::Utils::Vec2::Vec2(const ImVec2& _Vec) : m_x{ _Vec.x }, m_y{ _Vec.y } {};
 
 /*========================= Operators =========================*/
 	/* Addition */
@@ -99,7 +100,7 @@ std::unordered_map < QF::Utils::Vec2::Hint, QF::Utils::Vec2::HintValue> QF::Util
 
 						break; 
 					default:
-						QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::ERROR, __FUNCTION__,
+						QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::CRITICAL_ERROR, __FUNCTION__,
 							"vector tried dividing by 0: aborting, ps: current vec2 hint is set to abort."
 						);
 
@@ -162,6 +163,13 @@ std::unordered_map < QF::Utils::Vec2::Hint, QF::Utils::Vec2::HintValue> QF::Util
 		const bool QF::Utils::Vec2::operator!=(const QF::Utils::Vec2& _Other) const
 		{
 			return !(operator==(_Other));
+		}
+
+		QF::Utils::Vec2& QF::Utils::Vec2::operator=(const QF::Utils::Vec2& _Other) 
+		{
+			m_x = _Other.m_x;
+			m_y = _Other.m_y;
+			return *this;
 		}
 
 /*========================= Transformations =========================*/

@@ -136,13 +136,18 @@
     <ClCompile Include="QF\UI\QFApp.cpp" />
     <ClCompile Include="QF\UI\QFElement.cpp" />
     <ClCompile Include="QF\UI\QFEventSystem.cpp" />
+    <ClCompile Include="QF\UI\QFHelpers.cpp" />
     <ClCompile Include="QF\UI\QFPanel.cpp" />
-    <ClCompile Include="QF\UI\QFWindow.cpp" />
+    <ClCompile Include="QF\UI\Window\QFWindow.cpp" />
+    <ClCompile Include="QF\UI\SimpleDC.cpp" />
+    <ClCompile Include="QF\UI\Window\QFWindowTitlebar.cpp" />
+    <ClCompile Include="QF\Utils\Math.cpp" />
     <ClCompile Include="QF\Utils\QFDebug.cpp" />
     <ClCompile Include="QF\Utils\QFFilesystem.cpp" />
     <ClCompile Include="QF\Utils\QFTime.cpp" />
     <ClCompile Include="QF\Utils\QFTransform.cpp" />
     <ClCompile Include="QF\Utils\QFVec2.cpp" />
+    <ClCompile Include="QF\Utils\QFSystem.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
