@@ -165,12 +165,14 @@ std::unordered_map < QF::Utils::Vec2::Hint, QF::Utils::Vec2::HintValue> QF::Util
 			return !(operator==(_Other));
 		}
 
-		QF::Utils::Vec2& QF::Utils::Vec2::operator=(const QF::Utils::Vec2& _Other) 
+		QF::Utils::Vec2 QF::Utils::Vec2::operator=(const QF::Utils::Vec2& _Other) 
 		{
 			m_x = _Other.m_x;
 			m_y = _Other.m_y;
 			return *this;
 		}
+
+		
 
 /*========================= Transformations =========================*/
 	const std::string QF::Utils::Vec2::g_String() const
@@ -187,6 +189,9 @@ std::unordered_map < QF::Utils::Vec2::Hint, QF::Utils::Vec2::HintValue> QF::Util
 	{
 		return ImVec2{ m_x, m_y };
 	}
+
+	const float QF::Utils::Vec2::g_X() const { return m_x; };
+	const float QF::Utils::Vec2::g_Y() const { return m_y; };
 /*========================= Global Vec2 Hints =========================*/
 	void QF::Utils::Vec2::s_GlobalVec2Hint(
 		QF::Utils::Vec2::Hint _Hint, QF::Utils::Vec2::HintValue _HintValue)

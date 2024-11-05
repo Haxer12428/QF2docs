@@ -3,7 +3,7 @@
 /*========================= Constructor & Destructor =========================*/
 	QF::UI::App::App() : m_LastGivenID{0}
 	{
-	
+		/* Initialize glew */
 	}
 
 	void QF::UI::App::Implement()

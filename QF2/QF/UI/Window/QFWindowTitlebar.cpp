@@ -9,23 +9,59 @@
 		
 		/* Register hooks to panel handler */
 		func_InitializeHooks();
+
+		/* Register buttons */
+		QF::UI::Components::Button::Hints _ButtonsHints;
+		_ButtonsHints.m_ColorActivated = ImColor(255, 0, 0);
+		_ButtonsHints.m_ColorDefault = ImColor(m_Hints.m_BackgroundColor);
+		_ButtonsHints.m_Parent = this;
+		_ButtonsHints.m_Position = { 0, 0 };
+
+		_ButtonsHints.m_Size = { g_Size().y };
+
+		/* Exit button */
+		m_Buttons[0] = (new QF::UI::Components::Button(_ButtonsHints));
+		/* Maximize button */
+		_ButtonsHints.m_ColorActivated = ImColor(81, 84, 91, 255);
+		m_Buttons[1] = (new QF::UI::Components::Button(_ButtonsHints));
+		/* Minimalize button */
+		//_ButtonsHints.m_ColorActivated = ImColor(90, 90, 90);
+		m_Buttons[2] = (new QF::UI::Components::Button(_ButtonsHints));
 	}
 
 	QF::UI::Window::TitleBar::~TitleBar()
 	{} 
 /*========================= Layout handling -> Sizer =========================*/
-	void QF::UI::Window::TitleBar::func_SetLayout() 
+	void QF::UI::Window::TitleBar::func_SetLayout()
 	{
-		this->s_Position({ 0, 0 }); /* Top left of the frame */
+		/* Set position at the top left of the frame */
+		this->s_Position({ 0, 0 });
+
+		/* Set size: full width, custom height based on the title font */
 		this->s_Size(QF::Utils::Vec2(
-				m_Window->g_Size().x,
-				/* Centered */
-				QF::Utils::Math::g_TextSize(
-					m_Window->g_Name(),
-					m_Hints.m_TitleFont
-				).y + 6.0f
-			)
-		); /* x -> full, y -> custom */
+			m_Window->g_Size().g_X(),
+			QF::Utils::Math::g_TextSize(m_Window->g_Name(), m_Hints.m_TitleFont).y + 12.0f
+		));
+
+		/* Update for buttons */
+		int _Iterator = 1;
+		for (QF::UI::Components::Button* _Current : m_Buttons)
+		{
+			/* Set button size to the height of the title bar */
+			/* Change offset by -1 of y to avoid rendering 'glitch ' */
+			_Current->s_Size({ g_Size().g_Y(), g_Size().g_Y() - 1.0f });
+
+			/* Position button centered */
+			const QF::Utils::Vec2 _Pos = QF::Utils::Vec2(
+				g_Size().g_X() - (_Current->g_Size().g_X() * _Iterator),
+				g_PositionOffset().g_Y()
+			);
+
+			_Current->s_Position(_Pos);
+
+			//std::cout << "pos set \n";
+			_Iterator++;
+		}
 	}
 /*========================= Hooks =========================*/
 	void QF::UI::Window::TitleBar::func_InitializeDefaultHints()

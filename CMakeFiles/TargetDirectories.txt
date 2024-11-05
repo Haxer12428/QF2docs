@@ -1,0 +1,3 @@
+C:/Users/Survi/source/repos/QF2/CMakeFiles/MyProject.dir
+C:/Users/Survi/source/repos/QF2/CMakeFiles/ALL_BUILD.dir
+C:/Users/Survi/source/repos/QF2/CMakeFiles/ZERO_CHECK.dir

@@ -37,7 +37,7 @@ std::once_flag QF::Utils::Debug::m_InitializerInitOnceFlag;
 			return;
 		}
 		
-
+	
 		/* Call once flag to avoid multiple calls */
 		std::call_once(m_InitializerInitOnceFlag, []() {
 			/* Clear debug file */

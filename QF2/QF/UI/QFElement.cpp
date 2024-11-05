@@ -3,6 +3,8 @@
 /*========================= Ownership handling: what am i? =========================*/
 	void QF::UI::Element::im_Panel(Panel* _Panel, Element* _Parent)
 	{
+		if (_Panel == nullptr || _Parent == nullptr) return; 
+
 		m_Panel = _Panel;
 		/* Set absolute parent of this window based on _Parent passed as argument */
 		m_AbsoluteParent = _Parent->g_AbsoluteParent();

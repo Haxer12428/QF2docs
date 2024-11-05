@@ -24,17 +24,39 @@ std::string replaceLineEndings(const std::string& input, const std::string& repl
 class MyPanel : public QF::UI::Panel
 {
 public:
-	MyPanel(QF::UI::Element* _Parent) : QF::UI::Panel(_Parent, { 10, 10 }, { 300, 500 })
+	MyPanel(QF::UI::Element* _Parent) : QF::UI::Panel(_Parent, { 50, 50 }, { 20, 20 })
 	{
 		g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(this, &MyPanel::renderDispatched);
+		//m_Image = new QF::Utils::Image("C:\\QF\\iconclose.png");
+
 	}
 
 	void renderDispatched(QF::UI::EventSystem::RenderEvent& _Evt)
 	{
-		QF::UI::SimpleDC _Canavas{this};
 		
-		_Canavas.draw_Text({ 20, 20 }, ImColor(255, 0, 0), "Text without specified font");
+
+		if (std::chrono::duration_cast<std::chrono::seconds>(
+			std::chrono::high_resolution_clock::now() - _Now
+		 ).count() > 1)
+		{
+			_BuildPanels++;
+			_Now = std::chrono::high_resolution_clock::now();
+
+			QF::UI::Components::Button::Hints _Hints;
+			_Hints.m_ColorActivated = ImColor(255, 255, 255);
+			_Hints.m_ColorDefault = ImColor(0, 128, 255);
+			_Hints.m_Position = {20 + 21*_BuildPanels, 50};
+			_Hints.m_Size = {20, 20};
+			_Hints.m_Parent = g_AbsoluteParent();
+
+			//QF::UI::Panel* m_next = new QF::UI::Panel(_Hints.m_Parent, {10, 10}, {20, 20});
+		}
 	}
+
+	std::vector<QF::UI::Panel*> m_Buttons;
+	QF::Utils::Image* m_Image; 
+	std::chrono::high_resolution_clock::time_point _Now = std::chrono::high_resolution_clock::now();
+	int _BuildPanels = 0;
 };
 
 class Application : public QF::UI::App
@@ -44,14 +66,21 @@ public:
 
 	bool on_Init() override
 	{
-		QF::UI::Window* _Window4 = new QF::UI::Window(this, "QF4");
+		
 
+		QF::UI::Window* _Window4 = new QF::UI::Window(this, "QF4");
+		MyPanel* panel = new MyPanel(_Window4);
+		
+	//	QF::UI::Window* _Window5 = new QF::UI::Window(this, "QF5");
+
+	//	MyPanel* panel2 = new MyPanel(_Window4);
 		//QF::UI::Panel* _panel1 = new QF::UI::Panel(_Window4, { 50, 50 }, { 400, 200 });
-		//MyPanel* panel = new MyPanel(_panel1);
+
 		//QF::UI::Panel* _panel2 = new QF::UI::Panel(panel, { 40, 40 }, { 40, 40 });
 
 		//_panel1->Destroy();
-
+	
+		
 
 		return true; 
 	}
@@ -60,14 +89,12 @@ public:
 
 int main()
 {
-
 	QF::Utils::Debug::s_MultipleGlobalDebugPrintHints(
 		{
 			QF::Utils::Debug::PrintHint::PRINT_CRITICAL_ERROR,
 			QF::Utils::Debug::PrintHint::PRINT_WARNING,
 			QF::Utils::Debug::PrintHint::PRINT_MESSAGE,
 			QF::Utils::Debug::PrintHint::PRINT_WITH_COLORS,
-			QF::Utils::Debug::PrintHint::PRINT_TO_FILE,
 			QF::Utils::Debug::PrintHint::PRINT_IMPORTANT
 		}, true
 	);

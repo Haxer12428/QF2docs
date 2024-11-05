@@ -36,3 +36,19 @@ const std::string QF::Utils::Transform::g_WithoutOccurences(
 	/* Return modified copy */
 	return _StrCopy;
 }
+
+const std::vector<float> QF::Utils::Transform::g_VectorFloatFromImColor(const ImColor& _Color)
+{
+	std::vector<float> _Values; 
+	_Values.push_back(_Color.Value.x * 255);
+	_Values.push_back(_Color.Value.y * 255);
+	_Values.push_back(_Color.Value.z * 255);
+	_Values.push_back(_Color.Value.w * 255);
+
+	return _Values;
+}
+
+const ImColor QF::Utils::Transform::g_ImColorFromFloatVector(const std::vector<float>& _Values)
+{
+	return ImColor(static_cast<int>(_Values[0]), static_cast<int>(_Values[1]), static_cast<int>(_Values[2]), static_cast<int>(_Values[3]));
+}

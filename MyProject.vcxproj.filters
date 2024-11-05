@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\QFInit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Components\QFButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\QFApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\QFElement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\QFEventSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\QFHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\QFPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\SimpleDC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindowTitlebar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFDebug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFFilesystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFVec2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\Survi\source\repos\QF2\QF2\QF\QF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Survi\source\repos\QF2\CmakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{115DEC68-C1FE-3F15-8C04-52D9121BB12D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4BDF9037-2229-3FB9-A3AF-D151A6D65C1B}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

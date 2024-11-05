@@ -133,6 +133,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="QF\QFInit.cpp" />
+    <ClCompile Include="QF\UI\Components\QFButton.cpp" />
     <ClCompile Include="QF\UI\QFApp.cpp" />
     <ClCompile Include="QF\UI\QFElement.cpp" />
     <ClCompile Include="QF\UI\QFEventSystem.cpp" />
@@ -141,9 +143,11 @@
     <ClCompile Include="QF\UI\Window\QFWindow.cpp" />
     <ClCompile Include="QF\UI\SimpleDC.cpp" />
     <ClCompile Include="QF\UI\Window\QFWindowTitlebar.cpp" />
-    <ClCompile Include="QF\Utils\Math.cpp" />
+    <ClCompile Include="QF\Utils\QFMath.cpp" />
+    <ClCompile Include="QF\Utils\QFAnimation.cpp" />
     <ClCompile Include="QF\Utils\QFDebug.cpp" />
     <ClCompile Include="QF\Utils\QFFilesystem.cpp" />
+    <ClCompile Include="QF\Utils\QFImage.cpp" />
     <ClCompile Include="QF\Utils\QFTime.cpp" />
     <ClCompile Include="QF\Utils\QFTransform.cpp" />
     <ClCompile Include="QF\Utils\QFVec2.cpp" />

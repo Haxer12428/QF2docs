@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <SOIL/SOIL.h>
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -31,8 +32,17 @@
 /*========================= QF =========================*/
 const std::string __QF_EMPTY_STRING = "";
 
+
 namespace QF
 {
+	class Init
+	{
+	public:
+		static bool m_GlewInitialized;
+
+		static void Glew();
+	};
+
 	/*========================= Utils =========================*/
 	namespace Utils
 	{
@@ -43,6 +53,8 @@ namespace QF
 			static const std::string g_StringFromStringVector(const std::vector<std::string>& _Vec,
 				const std::string& _LineEnding = "\r\n");
 			static const std::string g_WithoutOccurences(const std::string& _Str, const std::string& _Occurence);
+			static const std::vector<float> g_VectorFloatFromImColor(const ImColor& _Color);
+			static const ImColor g_ImColorFromFloatVector(const std::vector<float>& Values);
 		};
 
 		class Time
@@ -171,6 +183,9 @@ namespace QF
 			Vec2(const float _x, const float _y);
 			Vec2(const ImVec2& _Vec);
 			
+			const float g_X() const;
+			const float g_Y() const;
+
 			float& x = m_x;
 			float& y = m_y;
 		/* Mathematical operations */
@@ -205,7 +220,7 @@ namespace QF
 				const bool operator==(const QF::Utils::Vec2& _Other) const; 
 				const bool operator!=(const QF::Utils::Vec2& _Other) const;
 			/* Set operator */
-				Vec2& operator=(const Vec2& _Other);
+				Vec2 operator=(const Vec2& _Other);
 		/* Transformation */
 			const std::string g_String() const; 
 			const char* g_CharPtr() const; 
@@ -214,6 +229,30 @@ namespace QF
 
 			float m_x; 
 			float m_y;
+		};
+		/*========================= Animation =========================*/
+		class Animation
+		{
+		public: 
+			Animation(const std::vector<float>& _ValuesWanted = {});
+			
+			const std::vector<float> func_Lerp(
+				const std::vector<float>& _ValuesStarted, 
+				const std::vector<float>& _ValuesWanted, 
+				const int& _ReachInMs
+				);
+
+			const std::vector<float> func_SmartLerp(const std::vector<float>& _Wanted, const int& _Speed);
+		private:
+			
+			const float method_Lerp(const float& _Start, const float& _Final, const float& _T) const;
+		
+
+			std::vector<float> m_ValuesCurrent;
+			std::vector<float> m_ValuesWanted;
+			std::vector<float> m_ValuesStarted;
+			/* Last anim update */
+			std::chrono::high_resolution_clock::time_point m_LastUpdated;
 		};
 		/*========================= Math =========================*/
 
@@ -275,11 +314,27 @@ namespace QF
 				std::filesystem::path m_Path;
 			};
 		};
-	}
+	
+		class Image
+		{
+		public:
+			Image(const std::filesystem::path& _PathToImage, bool _ModifyColor = false, const ImColor& _ImageColor = ImColor(255,255,255));
+
+			ImTextureID g_GLTexture() const;
+		private:
+			void func_LoadTexture();
+
+			const bool m_ModifyColor;
+			const ImColor m_Color;
+			const std::filesystem::path m_Path;
+			GLuint m_Texture; 
+		};
+}
 
 	namespace UI
 	{
 		class Panel;
+		class Window;
 
 		class Helpers
 		{ 
@@ -306,14 +361,20 @@ namespace QF
 				const QF::Utils::Vec2 g_Position() const; 
 				QF::UI::Panel* g_Panel() const;
 			private:
-				const QF::Utils::Vec2 m_Position; 
+				QF::Utils::Vec2 m_Position; 
 				QF::UI::Panel* m_Panel;
 			};
 
-			class MouseClickedEvent : public MouseMotionEvent
+			class MouseClickedEvent : public Event
 			{
 			public:
-				MouseClickedEvent(QF::UI::Panel* _Panel); 
+				MouseClickedEvent(QF::UI::Panel* _Panel,  const QF::Utils::Vec2& _Position); 
+
+				const QF::Utils::Vec2 &g_GlobalPosition() const;
+				const QF::Utils::Vec2 &g_Position() const;
+			private:
+				QF::Utils::Vec2 m_Position;
+				QF::UI::Panel* m_Panel;
 			};
 
 			class MousePanelDragEvent : public MouseMotionEvent
@@ -331,6 +392,12 @@ namespace QF
 			{
 			public:
 				RenderEvent() = default;	
+			};
+
+			class MouseButtonClickEvent : public MouseClickedEvent
+			{
+			public:
+				MouseButtonClickEvent(Panel* _Panel);
 			};
 		/* Event handler */
 			class EventHandler {
@@ -369,7 +436,7 @@ namespace QF
 				
 				/* Dispatch event (call event), _EventType */
 				template <typename __EventType>
-				void Dispatch(__EventType& _Evt) 
+				void Dispatch(__EventType _Evt) 
 				{
 					auto _It = m_Listeners.find(typeid(__EventType));
 
@@ -414,7 +481,7 @@ namespace QF
 		class Panel : public Element
 		{ public: 
 		/* Constructor & destructor */
-			Panel(Element* _Parent, const QF::Utils::Vec2& _Position, const QF::Utils::Vec2& _Size);
+			Panel(Element* _Parent, const QF::Utils::Vec2& _Position, const QF::Utils::Vec2& _Size, const bool& _Special = false);
 			~Panel();
 			void Destroy();
 			void DestroyWindowCall();
@@ -461,14 +528,42 @@ namespace QF
 			QF::Utils::Vec2 m_Size; 
 			Element* m_Parent; 
 
+			bool m_Special;
 			bool m_Visible;
 			std::vector<Panel*> m_Children;
 			/* Event handler */
-			EventSystem::EventHandler* m_EventHandler;
+			EventSystem::EventHandler* m_EventHandler = 
+				new EventSystem::EventHandler();
 
 			size_t m_ID = 0; 
 		};
 
+
+		namespace Components
+		{
+			class Button : public QF::UI::Panel
+			{
+			public:
+				struct Hints
+				{
+					QF::Utils::Vec2 m_Position; 
+					QF::Utils::Vec2 m_Size; 
+					QF::UI::Element* m_Parent; 
+					ImU32 m_ColorDefault;
+					ImU32 m_ColorActivated;
+					
+				};
+
+				Button(Hints _Hints);
+
+				Hints m_Hints; 
+			private:
+				void hk_Render(QF::UI::EventSystem::RenderEvent& _Event);
+				void hk_OnMouseClick(QF::UI::EventSystem::MouseClickedEvent& _Event);
+
+				QF::Utils::Animation* m_BackgroundAnimations = new QF::Utils::Animation();
+			};
+		};
 
 		class Window : public Element	
 		{
@@ -488,7 +583,6 @@ namespace QF
 					ImFont* m_TitleFont;
 				};
 			
-			private:
 				Hints m_Hints;
 			private:
 				/* Initialize default hints */
@@ -507,6 +601,7 @@ namespace QF
 
 			private:
 				Window* m_Window;
+				std::array<QF::UI::Components::Button*, 3> m_Buttons;
 			};
 
 		public:
@@ -527,7 +622,7 @@ namespace QF
 
 			template<typename __EventType>
 			void hk_TopToBottomPanelBasedEventPropagation(
-				const std::function<bool(Panel*)>& _Condition, const std::function<__EventType&(Panel*)>& _Event)
+				const std::function<bool(Panel*)>& _Condition, const std::function<__EventType(Panel*)>& _Event)
 			{
 				/* Dispatch from top to bottom */
 				for (int _Iterator = static_cast<int>(m_Children.size() - 1); _Iterator >= 0; --_Iterator)
@@ -556,6 +651,7 @@ namespace QF
 			const std::string& g_Name() const; 
 			const QF::Utils::Vec2 g_Size() const;
 			void s_Position(const QF::Utils::Vec2& _New);
+			const QF::Utils::Vec2 g_MousePosition() const;
 		/* Children handling */
 		public:
 			void im_NoLongerAChildren(Panel* _Panel);

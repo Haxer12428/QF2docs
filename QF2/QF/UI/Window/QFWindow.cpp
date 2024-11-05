@@ -54,7 +54,7 @@
 /*========================= GLFW Window =========================*/
 	const QF::Utils::Vec2 QF::UI::Window::g_AbsoluteMousePosition() const
 	{
-		const QF::Utils::Vec2 _MousePos = ImGui::GetMousePos();
+		const QF::Utils::Vec2 _MousePos = g_MousePosition();
 		const QF::Utils::Vec2 _WindowPos = g_WindowPosition();
 
 		return (_MousePos + _WindowPos);
@@ -71,6 +71,14 @@
 	void QF::UI::Window::s_Position(const QF::Utils::Vec2& _New)
 	{
 		glfwSetWindowPos(m_Window, static_cast<int>(_New.x), static_cast<int>(_New.y));
+	}
+
+	const QF::Utils::Vec2 QF::UI::Window::g_MousePosition() const
+	{
+		double _x, _y; 
+		glfwGetCursorPos(m_Window, &_x, &_y);
+		/* Return with static cast to not lose data */
+		return { static_cast<float>(_x), static_cast<float>(_y) };
 	}
 
 	ImGuiContext* QF::UI::Window::g_ImGuiContext() const 
@@ -231,18 +239,25 @@
 		/* Propagate from bottom to top */
 		for (Panel* _Child : m_Children)
 		{
+			try {
+				if (_Child != nullptr)
+				{
+					if (_Child->g_Visibility()) { _Child->g_EventHandler()->Dispatch(EventSystem::RenderEvent{}); }
+				}
+			} catch (...) {};
 			/* Dispatch only if visible*/
-			if (_Child->g_Visibility()) { _Child->g_EventHandler()->Dispatch(_Event); }
+			
 		}
 	}
 
 	void QF::UI::Window::hk_RenderEvent()
 	{
+		
 		/* Prepare backend & frame */
 		func_RenderEventPrepare();
 		/* Call things */
-		EventSystem::RenderEvent _Event;
-		m_EventHandler->Dispatch(_Event);
+		
+		m_EventHandler->Dispatch(EventSystem::RenderEvent{});
 
 		/* Finalize -> Cleanup */
 		func_RenderEventFinalize();
@@ -252,6 +267,7 @@
 
 	void QF::UI::Window::func_RenderEventPrepare()
 	{
+		ImGui::SetCurrentContext(m_Context);
 		/* Initialize backend */
 		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
 		ImGui_ImplOpenGL3_Init("#version 130");
@@ -259,6 +275,7 @@
 		/* Initalize context and glclear current buffer */
 		glfwMakeContextCurrent(m_Window);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
 
 		/* Create imgui frame */
 		ImGui_ImplOpenGL3_NewFrame();
@@ -285,6 +302,7 @@
 			/* Flags */
 			ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar
 		);
+		glfwPollEvents();
 	}
 
 	void QF::UI::Window::func_RenderEventFinalize()
@@ -304,7 +322,7 @@
 	/* Mouse motion event */
 	void QF::UI::Window::hk_MouseMotionEvent()
 	{
-		const QF::Utils::Vec2 _MousePosition = ImGui::GetMousePos();
+		const QF::Utils::Vec2 _MousePosition = g_MousePosition();
 
 		/* Check if in the same place */
 		if (m_MouseMotionEventLastPlaced == _MousePosition)
@@ -323,7 +341,7 @@
 				/* Propagate event */
 				return true; 
 			},
-			[&](Panel* _Panel) -> EventSystem::MouseMotionEvent& {
+			[&](Panel* _Panel) -> EventSystem::MouseMotionEvent {
 				EventSystem::MouseMotionEvent _Event(_Panel); return _Event;
 			}
 		);
@@ -352,7 +370,7 @@
 		/* Propagate */
 		hk_TopToBottomPanelBasedEventPropagation<EventSystem::MouseClickedEvent>(
 			[&](Panel* _Panel) -> bool {
-				const QF::Utils::Vec2 _MousePosition = ImGui::GetMousePos();
+				const QF::Utils::Vec2 _MousePosition = g_MousePosition();
 				/* Check if its suitable for current panel */
 				if (!_Panel->is_InBounds(_MousePosition)) return false;
 				/* Setting up things for other event handlers that require a panel click */
@@ -361,8 +379,8 @@
 				/* Propagate event */
 				return true;
 			},
-			[&](Panel* _Panel) -> EventSystem::MouseClickedEvent& {
-				EventSystem::MouseClickedEvent _Event(_Panel); return _Event;
+			[&](Panel* _Panel) -> EventSystem::MouseClickedEvent {
+				EventSystem::MouseClickedEvent _Event(_Panel, g_MousePosition()); return _Event;
 			}
 		);
 	}
