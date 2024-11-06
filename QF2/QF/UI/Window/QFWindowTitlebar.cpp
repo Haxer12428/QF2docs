@@ -2,7 +2,7 @@
 
 /*========================= Constructor & Destructor  =========================*/
 	QF::UI::Window::TitleBar::TitleBar(Window* _Window)
-		: m_Window{_Window}, Panel(_Window, {10.0f, 10.0f}, {10.0f, 10.0f})
+		: m_Window{_Window}, Panel(_Window, {10.0f, 10.0f}, {10.0f, 10.0f}, true)
 	{
 		/* Set default configuration */
 		func_InitializeDefaultHints();
@@ -10,23 +10,21 @@
 		/* Register hooks to panel handler */
 		func_InitializeHooks();
 
+		/* Default buttons hints */
+		QF::UI::Components::Button::Hints _DefaultButtonsHints;
+		_DefaultButtonsHints.m_Parent = this; 
+		_DefaultButtonsHints.m_ColorDefault = m_Hints.m_BackgroundColor;
+		_DefaultButtonsHints.m_ImageSizeFactor = 0.75f;
+		_DefaultButtonsHints.m_Position = {0, 0};
+		_DefaultButtonsHints.m_Size = {40, 40};
+		_DefaultButtonsHints.m_ColorActivated = ImColor(255,255,255);
+		_DefaultButtonsHints.m_ImageColor = ImColor(190,190,190,255);
+
 		/* Register buttons */
-		QF::UI::Components::Button::Hints _ButtonsHints;
-		_ButtonsHints.m_ColorActivated = ImColor(255, 0, 0);
-		_ButtonsHints.m_ColorDefault = ImColor(m_Hints.m_BackgroundColor);
-		_ButtonsHints.m_Parent = this;
-		_ButtonsHints.m_Position = { 0, 0 };
-
-		_ButtonsHints.m_Size = { g_Size().y };
-
-		/* Exit button */
-		m_Buttons[0] = (new QF::UI::Components::Button(_ButtonsHints));
-		/* Maximize button */
-		_ButtonsHints.m_ColorActivated = ImColor(81, 84, 91, 255);
-		m_Buttons[1] = (new QF::UI::Components::Button(_ButtonsHints));
-		/* Minimalize button */
-		//_ButtonsHints.m_ColorActivated = ImColor(90, 90, 90);
-		m_Buttons[2] = (new QF::UI::Components::Button(_ButtonsHints));
+		m_Buttons[0] = new ButtonExit(this, _DefaultButtonsHints);
+			m_Buttons[1] = new ButtonMax(this, _DefaultButtonsHints);
+				m_Buttons[2] = new ButtonMin(this, _DefaultButtonsHints);
+				
 	}
 
 	QF::UI::Window::TitleBar::~TitleBar()
@@ -119,3 +117,64 @@
 		/* Apply */
 		m_Window->s_Position(_FixedPosition);
 	}
+
+/* Buttons segment */
+	/* Exit */
+	QF::UI::Window::TitleBar::ButtonExit::ButtonExit(QF::UI::Window::TitleBar* _Titlebar, 
+			QF::UI::Components::Button::Hints& _DefaultHints
+			)
+		: QF::UI::Components::Button(_DefaultHints)
+	{
+		m_Hints.m_ColorActivated = ImColor(255,0,0);
+		m_Hints.m_Image = new QF::Utils::Image(QF::Utils::Filesystem::Helpers::g_InCurrentPath(("iconclose.png")));
+
+		g_EventHandler()->Subscribe<QF::UI::EventSystem::MouseButtonClickEvent>(this, &ButtonExit::hk_Action);
+	}
+
+	void QF::UI::Window::TitleBar::ButtonExit::hk_Action(QF::UI::EventSystem::MouseButtonClickEvent& _Event)
+	{
+		glfwSetWindowShouldClose(g_AbsoluteParent()->g_Window()->g_GLFWwindow(), GLFW_TRUE);
+		
+	}
+
+	/* Min */
+	QF::UI::Window::TitleBar::ButtonMin::ButtonMin(QF::UI::Window::TitleBar* _Titlebar, 
+			QF::UI::Components::Button::Hints _DefaultHints
+			)
+		: QF::UI::Components::Button(_DefaultHints)
+	{
+		m_Hints.m_ColorActivated = ImColor(81, 84, 91);
+		m_Hints.m_Image = new QF::Utils::Image(QF::Utils::Filesystem::Helpers::g_InCurrentPath(("iconmin.png")));
+
+		g_EventHandler()->Subscribe<QF::UI::EventSystem::MouseButtonClickEvent>(this, &ButtonMin::hk_Action);
+	}
+
+	void QF::UI::Window::TitleBar::ButtonMin::hk_Action(QF::UI::EventSystem::MouseButtonClickEvent& _Event)
+	{
+		glfwIconifyWindow(g_AbsoluteParent()->g_GLFWwindow());
+	}
+
+	/* Max */
+	QF::UI::Window::TitleBar::ButtonMax::ButtonMax(QF::UI::Window::TitleBar* _Titlebar, 
+			QF::UI::Components::Button::Hints _DefaultHints
+			)
+		: QF::UI::Components::Button(_DefaultHints)
+	{
+		m_Hints.m_ColorActivated = ImColor(81, 84, 91);
+		m_Hints.m_Image = new QF::Utils::Image(QF::Utils::Filesystem::Helpers::g_InCurrentPath(("iconmax.png")));
+
+		g_EventHandler()->Subscribe<QF::UI::EventSystem::MouseButtonClickEvent>(this, &ButtonMax::hk_Action);
+	}
+
+	void QF::UI::Window::TitleBar::ButtonMax::hk_Action(QF::UI::EventSystem::MouseButtonClickEvent& _Event)
+	{
+		GLFWwindow* _GLFWwindow = g_AbsoluteParent()->g_GLFWwindow();
+
+		if (glfwGetWindowAttrib(_GLFWwindow, GLFW_MAXIMIZED))
+		{ /* Already maximized -> restore */
+			glfwRestoreWindow(_GLFWwindow); return; 
+		}
+		/* Maximize */
+		glfwMaximizeWindow(_GLFWwindow);
+	}
+	

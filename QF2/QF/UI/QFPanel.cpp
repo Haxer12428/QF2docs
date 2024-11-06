@@ -1,15 +1,10 @@
 #include "../QF.h"
 
 /*========================= Constructor & Destructor =========================*/
-QF::UI::Panel::Panel(Element* _Parent,
-	const QF::Utils::Vec2& _Position, const QF::Utils::Vec2& _Size, const bool& _Special)
-	: m_Parent{ _Parent }, m_Size{ _Size }, m_Position{ _Position },
-	Element(), m_Special{ false },m_Visible{true}
+/* experimental: Assign panels before main loop */
+void QF::UI::Panel::func_Assign() 
 {
-	/* Declare that I'm a panel */
-	im_Panel(this, m_Parent);
 	/* Declare that I'm a child of the absolute parent */
-	
 	if (g_AbsoluteParent())
 	{
 		g_AbsoluteParent()->im_Children(this);
@@ -23,12 +18,29 @@ QF::UI::Panel::Panel(Element* _Parent,
 
 	/* Assign id */
 	m_ID = g_AbsoluteParent()->g_GeneratedID();
+	/* Tell that its assigne already */
+	m_Assigned = true; 
 	/* Assign position & size offsets & visibility */
 	func_UpdateAllDependent();
+}
+
+QF::UI::Panel::Panel(Element* _Parent,
+	const QF::Utils::Vec2& _Position, const QF::Utils::Vec2& _Size, const bool& _Special)
+	: m_Parent{ _Parent }, m_Size{ _Size }, m_Position{ _Position },
+	Element(), m_Special{ _Special },m_Visible{true}
+{
+	/* Declare that I'm a panel */
+	im_Panel(this, m_Parent);
 
 	/* Finalization complete */
 	QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
 		"Panel initialized successfully");
+
+	/* Wait for Window to assign me */
+	_Parent->g_AbsoluteParent()->i_WantToBeAssigned(this);
+
+		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
+		"Panel is waiting for stack assigment.");
 }
 
 void QF::UI::Panel::Destroy()
@@ -47,7 +59,7 @@ QF::UI::Panel::~Panel()
 {
 		func_EraseChildren();
 	/* Delete event handler */
-	//delete m_EventHandler;
+	delete m_EventHandler;
 
 	/* No longer a window child & a panel child if it was */
 	if (g_AbsoluteParent()) {
@@ -132,12 +144,6 @@ void QF::UI::Panel::func_UpdateVisibility()
 		m_Visible = true;
 		return;
 	}
-
-	/* Apply false if there isn't anything to show -> avoid unnecessary calls */
-	if (m_SizeOffset == QF::Utils::Vec2{ 0.0f, 0.0f }) {
-		m_Visible = false;
-		return;
-	}
 	/* Apply same as parent */
 	m_Visible = _ParentPanel->m_Visible;
 }
@@ -157,24 +163,39 @@ void QF::UI::Panel::func_UpdateAllDependent()
 }
 
 /*========================= Children Handling =========================*/
+/**
+ * @brief Removes a specified panel from the list of children panels.
+ *
+ * This function iterates through the list of child panels and removes the panel
+ * that matches the given panel's ID. It also logs a debug message when a panel
+ * is successfully removed.
+ *
+ * @param _Panel Pointer to the Panel object to be removed from the children list.
+ *
+ * @return void
+ *
+ * @note If the specified panel is not found in the children list, the function
+ *       will silently complete without making any changes.
+ */
 void QF::UI::Panel::im_NoLongerChildren(Panel* _Panel)
 {
-	size_t _Iterator = 0;
-	for (Panel* _Child : m_Children)
-	{
-		if (_Child && _Panel && _Child->g_Id() == _Panel->g_Id())
-		{
-			m_Children.erase((m_Children.begin() + _Iterator));
+    size_t _Iterator = 0;
+    for (Panel* _Child : m_Children)
+    {
+        if (_Child && _Panel && _Child->g_Id() == _Panel->g_Id())
+        {
+            m_Children.erase((m_Children.begin() + _Iterator));
 
-			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
-				std::format("Erased panel from children stack, id: {}, selfid: {}",
-					_Panel->g_Id(), this->g_Id()));
+            QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
+                std::format("Erased panel from children stack, id: {}, selfid: {}",
+                    _Panel->g_Id(), this->g_Id()));
 
-			return;
-		}
-		_Iterator++;
-	}
+            return;
+        }
+        _Iterator++;
+    }
 }
+
 
 const size_t QF::UI::Panel::g_Id() const
 {
@@ -254,6 +275,11 @@ const bool QF::UI::Panel::g_Visibility() const
 	return m_Visible;
 }
 
+const bool QF::UI::Panel::is_Assigned() const 
+{
+	return m_Assigned;
+}
+
 const bool QF::UI::Panel::is_InBounds(const QF::Utils::Vec2& _Vec) const
 {
 	return QF::Utils::Math::is_InBounds(_Vec, m_PositionOffset, m_SizeOffset);
@@ -262,6 +288,8 @@ const bool QF::UI::Panel::is_InBounds(const QF::Utils::Vec2& _Vec) const
 /*========================= Setting Offsets  =========================*/
 void QF::UI::Panel::s_Position(const QF::Utils::Vec2 _New)
 {
+	if (!is_Assigned()) return; 
+
 	/* Set position */
 	m_Position = _New;
 	/* Update position offset */
@@ -273,6 +301,8 @@ void QF::UI::Panel::s_Position(const QF::Utils::Vec2 _New)
 
 void QF::UI::Panel::s_Size(const QF::Utils::Vec2 _New)
 {
+	if (!is_Assigned()) return; 
+
 	m_Size = _New;
 	func_UpdateAllDependent();
 	func_UpdateSizeOffsetForChildren();
@@ -282,6 +312,8 @@ void QF::UI::Panel::s_Size(const QF::Utils::Vec2 _New)
 
 void QF::UI::Panel::s_Visible(const bool& _State)
 {
+	if (!is_Assigned()) return; 
+	
 	m_Visible = _State;
 	func_UpdateVisibilityForChildren();
 }

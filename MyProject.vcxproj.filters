@@ -28,6 +28,9 @@
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindowResize.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindowTitlebar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

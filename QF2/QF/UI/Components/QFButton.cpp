@@ -8,6 +8,12 @@
 		g_EventHandler()->Subscribe<EventSystem::MouseClickedEvent>(this, &Button::hk_OnMouseClick);
 	}
 
+	QF::UI::Components::Button::~Button()
+	{
+		if (m_Hints.m_Image == nullptr) return ;
+		delete m_Hints.m_Image;
+	}
+
 	void QF::UI::Components::Button::hk_Render(EventSystem::RenderEvent& _Event)
 	{
 		/* Get background color */
@@ -28,12 +34,19 @@
 
 		/* Draw background */
 		_Canvas.draw_RectFilled({0,0},g_Size(), _BGColor);
+
+		/* Draw image if available */
+		if (m_Hints.m_Image == nullptr) return; 
+
+		const QF::Utils::Vec2 _ImageSize = (g_Size() * m_Hints.m_ImageSizeFactor);
+		const QF::Utils::Vec2 _ImagePosition = ((g_Size() - _ImageSize) / 2.0f);
+
+		_Canvas.draw_Image(m_Hints.m_Image, _ImagePosition, _ImageSize, m_Hints.m_ImageColor);
 	}
 
 	void QF::UI::Components::Button::hk_OnMouseClick(EventSystem::MouseClickedEvent& _Event)
 	{
 		/* Propagate event further */
 		EventSystem::MouseButtonClickEvent _ToPropagate{this};
-		
 		g_EventHandler()->Dispatch( _ToPropagate );
 	}

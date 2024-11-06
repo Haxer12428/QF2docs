@@ -23,9 +23,10 @@
 			);
 		/* Initialize event propagation */
 		func_SubscribeEventsForPropagation();
-		/* Create titlebar */ 
+		/* Create titlebar & resize instances */ 
 		m_TitleBar = new TitleBar(this);
-
+		m_Resize = new Resize(this);
+		
 		/* Log success */
 		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
 			std::format("Successfully created window: {}", m_Name)
@@ -71,6 +72,11 @@
 	void QF::UI::Window::s_Position(const QF::Utils::Vec2& _New)
 	{
 		glfwSetWindowPos(m_Window, static_cast<int>(_New.x), static_cast<int>(_New.y));
+	}
+
+	void QF::UI::Window::s_Size(const QF::Utils::Vec2& _New) 
+	{
+		glfwSetWindowSize(m_Window, static_cast<int>(_New.g_X()), static_cast<int>(_New.g_Y()));
 	}
 
 	const QF::Utils::Vec2 QF::UI::Window::g_MousePosition() const
@@ -134,6 +140,8 @@
 
 		/* Make context current */
 		glfwMakeContextCurrent(m_Window);
+		/* Set window pointer */
+		glfwSetWindowUserPointer(m_Window, this);
 		return true; 
 	}
 
@@ -157,15 +165,34 @@
 		/* Handle nullptrs after children manual deletions */
 		func_EraseNullChildren();
 
-		/* Call events */
-		hk_MouseClickEvent();
-		hk_MouseMotionEvent();
-		hk_MousePanelDragEvent();
+		/* Assign children */
+		func_ChildrenAssign();
+
+		/* Check for resizing and block any other event than render */
+		if (m_Resize->hk_MainLoop() == false) 
+		{
+				/* Call events */
+			 hk_MouseClickEvent();
+			 hk_MouseMotionEvent();
+			 hk_MousePanelDragEvent();
+		}
 
 		/* Render for last */
 		hk_RenderEvent();
 	}
 /*========================= Children handling =========================*/
+	void QF::UI::Window::func_ChildrenAssign()
+	{
+		for (Panel* _Child : m_ChildrenWaitingForAssignment)
+		{
+			_Child->func_Assign();
+
+			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__, 
+				std::format("Assigned panel to stack, id: {}", _Child->g_Id()));
+		}
+		m_ChildrenWaitingForAssignment.clear();
+	}
+
 	void QF::UI::Window::im_NoLongerAChildren(Panel* _Panel)
 	{
 		size_t _Iterator = 0; 
@@ -189,6 +216,12 @@
 	{
 		m_LastId++;
 		return m_LastId;
+	}
+
+	void QF::UI::Window::i_WantToBeAssigned(Panel* _Panel) 
+	{
+		/* Add to assign queue */
+		m_ChildrenWaitingForAssignment.push_back(_Panel);
 	}
 
 	void QF::UI::Window::im_Children(Panel* _Panel)
@@ -246,8 +279,9 @@
 				}
 			} catch (...) {};
 			/* Dispatch only if visible*/
-			
 		}
+		/* Call resize icon rendering hook */
+		m_Resize->hk_Render();
 	}
 
 	void QF::UI::Window::hk_RenderEvent()
@@ -368,6 +402,7 @@
 		/* Override to avoid processing same event next frame */
 		m_MouseClickEventLastFrameHeld = true;
 		/* Propagate */
+				
 		hk_TopToBottomPanelBasedEventPropagation<EventSystem::MouseClickedEvent>(
 			[&](Panel* _Panel) -> bool {
 				const QF::Utils::Vec2 _MousePosition = g_MousePosition();
@@ -383,6 +418,8 @@
 				EventSystem::MouseClickedEvent _Event(_Panel, g_MousePosition()); return _Event;
 			}
 		);
+		/* Call resize for action */
+		m_Resize->hk_MouseClick();
 	}
 	/* Mouse Panel Drag Event */
 	void QF::UI::Window::hk_MousePanelDragEvent()

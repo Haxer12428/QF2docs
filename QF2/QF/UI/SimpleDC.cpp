@@ -86,3 +86,18 @@
 		/* Pop font */
 		if (_Font != nullptr) ImGui::PopFont();
 	}
+
+	void QF::UI::SimpleDC::draw_Image(
+		QF::Utils::Image* _Image, const QF::Utils::Vec2& _Position, const QF::Utils::Vec2& _Size, const ImColor& _Color, const QF::Utils::Vec2 _UvMin, const QF::Utils::Vec2 _UvMax
+	) {
+		if (_Image == nullptr) return; 
+
+		m_DrawList->AddImage(
+			_Image->g_GLTexture(),
+			g_Vec2(_Position).g_ImVec2(),
+			g_Vec2(_Position + _Size).g_ImVec2(),
+			_UvMin.g_ImVec2(),
+			_UvMax.g_ImVec2(),
+			_Color
+		);
+	}

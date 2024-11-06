@@ -1,6 +1,11 @@
 #include "../QF.h"
 
 /*========================= Filesystem =========================*/
+	const std::filesystem::path QF::Utils::Filesystem::Helpers::g_InCurrentPath(const std::filesystem::path& _Plus)
+	{ 
+		return std::filesystem::path(std::filesystem::current_path().string() + "/" + _Plus.string());
+	}
+
 	/*========================= Open =========================*/
 		/*========================= Buffer =========================*/
 			QF::Utils::Filesystem::Open::Buffer::Buffer(const std::vector<std::string>& _Buffer)

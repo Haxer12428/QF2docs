@@ -274,6 +274,12 @@ namespace QF
 		/*========================= Filesystem =========================*/
 		namespace Filesystem
 		{
+			class Helpers
+			{
+				public:
+				static const std::filesystem::path g_InCurrentPath(const std::filesystem::path& _Plus);
+			};
+
 			class Open
 			{
 			public:
@@ -319,6 +325,7 @@ namespace QF
 		{
 		public:
 			Image(const std::filesystem::path& _PathToImage, bool _ModifyColor = false, const ImColor& _ImageColor = ImColor(255,255,255));
+			~Image();
 
 			ImTextureID g_GLTexture() const;
 		private:
@@ -488,6 +495,7 @@ namespace QF
 		/* Position offset handling */
 			void func_UpdatePositionOffset();
 			void func_UpdateSizeOffset();
+			void func_Assign(); 
 		private:
 			void func_UpdatePositionOffsetForChildren();
 			void func_UpdateSizeOffsetForChildren();
@@ -506,6 +514,7 @@ namespace QF
 			const QF::Utils::Vec2 g_Size() const;  
 			const QF::Utils::Vec2 g_FinalPosition() const;
 			const QF::Utils::Vec2 g_FinalPositionOffset() const;
+			const bool is_Assigned() const;
 			const bool is_InBounds(const QF::Utils::Vec2& _Position) const; 
 			const bool g_Visibility() const;
 		/* Setting positions */
@@ -530,6 +539,7 @@ namespace QF
 
 			bool m_Special;
 			bool m_Visible;
+			bool m_Assigned = false; 
 			std::vector<Panel*> m_Children;
 			/* Event handler */
 			EventSystem::EventHandler* m_EventHandler = 
@@ -549,12 +559,15 @@ namespace QF
 					QF::Utils::Vec2 m_Position; 
 					QF::Utils::Vec2 m_Size; 
 					QF::UI::Element* m_Parent; 
-					ImU32 m_ColorDefault;
-					ImU32 m_ColorActivated;
-					
+					ImU32 m_ColorDefault = ImColor(255,255,255);
+					ImU32 m_ColorActivated = ImColor(255,255,255);
+					QF::Utils::Image* m_Image = nullptr;
+					ImU32 m_ImageColor = ImColor(255, 255, 255, 255);
+					float m_ImageSizeFactor = 1.0;
 				};
 
 				Button(Hints _Hints);
+				~Button();
 
 				Hints m_Hints; 
 			private:
@@ -568,8 +581,63 @@ namespace QF
 		class Window : public Element	
 		{
 		public:
+			class Resize 
+			{
+				public: 
+				 Resize(Window* _Window);
+					~Resize();
+
+					bool hk_MainLoop();
+					void hk_Render();
+					void hk_MouseClick();
+				private:
+				void hdl_Render(); 
+				bool hdl_StartResize();
+				void hdl_Resize();
+				void func_UpdatePositions(); 
+
+				private:
+				QF::Utils::Image* m_Image;
+
+				QF::Utils::Vec2 m_Position; 
+				QF::Utils::Vec2 m_Size; 
+
+				bool m_IsResizing = false;
+				QF::Utils::Vec2 m_StartPosition;
+
+				int m_DirectionX; 
+				int m_DirectionY;
+
+				Window* m_ParentWindow;
+			};
+
 			class TitleBar : public QF::UI::Panel
 			{
+				class ButtonExit : public QF::UI::Components::Button
+				{
+				public:
+					ButtonExit(TitleBar* _Titlebar, QF::UI::Components::Button::Hints& _DefaultHints);
+				private:
+					void hk_Action(QF::UI::EventSystem::MouseButtonClickEvent& _Event);
+				};
+
+				class ButtonMax : public QF::UI::Components::Button
+				{
+				public:
+					ButtonMax(TitleBar* _TitleBar, QF::UI::Components::Button::Hints _DefaultHints);
+				private:
+					void hk_Action(QF::UI::EventSystem::MouseButtonClickEvent& _Event);
+				};
+
+				class ButtonMin : public QF::UI::Components::Button
+				{
+				public:
+					ButtonMin(TitleBar* _TitleBar, QF::UI::Components::Button::Hints _DefaultHints);
+
+				private:
+					void hk_Action(QF::UI::EventSystem::MouseButtonClickEvent& _Event);
+				};
+
 			public:
 				/* Constructor & Destructor */
 				TitleBar(Window* _Window);
@@ -582,7 +650,7 @@ namespace QF
 					ImU32 m_TitleColor;
 					ImFont* m_TitleFont;
 				};
-			
+
 				Hints m_Hints;
 			private:
 				/* Initialize default hints */
@@ -652,13 +720,16 @@ namespace QF
 			const QF::Utils::Vec2 g_Size() const;
 			void s_Position(const QF::Utils::Vec2& _New);
 			const QF::Utils::Vec2 g_MousePosition() const;
+			void s_Size(const QF::Utils::Vec2& _New);
 		/* Children handling */
 		public:
 			void im_NoLongerAChildren(Panel* _Panel);
 			void im_Children(Panel* _Panel);
 			const size_t g_GeneratedID();
+			void i_WantToBeAssigned(Panel* _Panel);
 		private:
 			void func_ChildrenDestroy();
+			void func_ChildrenAssign(); 
 		public:
 			void func_EraseNullChildren();
 			/* Params */
@@ -668,6 +739,7 @@ namespace QF
 			std::string m_Name;
 			size_t m_ID;
 			std::vector<Panel*> m_Children; 
+			std::vector<Panel*> m_ChildrenWaitingForAssignment;
 
 			size_t m_LastId = 0;
 		/* Event handler */
@@ -681,8 +753,11 @@ namespace QF
 				Panel* m_MousePanelDragEventClickedAtPanel = nullptr;
 		/* Taskbar */
 			TitleBar* m_TitleBar; 
+		/* Resizer */
+			Resize* m_Resize; 
 
 			ImGuiContext* m_Context; 
+		
 		};
 
 		class App
@@ -725,6 +800,11 @@ namespace QF
 
 			void draw_Text(
 				const QF::Utils::Vec2& _Position, const ImColor& _Color, const std::string& _Text, ImFont* _Font = nullptr
+			);
+
+			void draw_Image(
+				QF::Utils::Image* _Image, const QF::Utils::Vec2& _Pos, const QF::Utils::Vec2& _Size, const ImColor& _Color = ImColor(255,255,255), const QF::Utils::Vec2 _UvMin = 
+				Utils::Vec2{0, 0}, const QF::Utils::Vec2 _UvMax = Utils::Vec2{1, 1}
 			);
 		private:
 			const QF::Utils::Vec2 g_Vec2(const float& _x, const float& _y) const;

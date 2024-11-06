@@ -1,0 +1,10 @@
+^C:\USERS\SURVI\SOURCE\REPOS\QF2\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Survi/source/repos/QF2 -BC:/Users/Survi/source/repos/QF2 --check-stamp-file C:/Users/Survi/source/repos/QF2/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

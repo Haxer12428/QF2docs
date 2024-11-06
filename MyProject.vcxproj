@@ -394,6 +394,7 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\QFPanel.cpp" />
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\SimpleDC.cpp" />
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindow.cpp" />
+    <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindowResize.cpp" />
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\UI\Window\QFWindowTitlebar.cpp" />
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFAnimation.cpp" />
     <ClCompile Include="C:\Users\Survi\source\repos\QF2\QF2\QF\Utils\QFDebug.cpp" />
