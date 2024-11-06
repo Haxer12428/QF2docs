@@ -31,7 +31,7 @@ void QF::Utils::Image::func_LoadTexture()
 	);
 }
 
-ImTextureID QF::Utils::Image::g_GLTexture() const
+ImTextureID QF::Utils::Image::g_ImGuiTextureure() const
 {
 	return reinterpret_cast<ImTextureID>(m_Texture);
 }

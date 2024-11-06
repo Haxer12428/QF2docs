@@ -93,7 +93,7 @@
 		if (_Image == nullptr) return; 
 
 		m_DrawList->AddImage(
-			_Image->g_GLTexture(),
+			_Image->g_ImGuiTextureure(),
 			g_Vec2(_Position).g_ImVec2(),
 			g_Vec2(_Position + _Size).g_ImVec2(),
 			_UvMin.g_ImVec2(),

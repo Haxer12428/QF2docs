@@ -47,8 +47,8 @@ void QF::UI::Window::Resize::hdl_Render()
 {
  ImDrawList* _DrawList = ImGui::GetWindowDrawList();
 
- _DrawList->AddImage(m_Image->g_GLTexture(), m_Position.g_ImVec2(), (m_Position + m_Size).g_ImVec2());
- //std::cout << m_Image->g_GLTexture() << "\n";
+ _DrawList->AddImage(m_Image->g_ImGuiTextureure(), m_Position.g_ImVec2(), (m_Position + m_Size).g_ImVec2());
+ //std::cout << m_Image->g_ImGuiTextureure() << "\n";
 }
 
 bool QF::UI::Window::Resize::hdl_StartResize()
@@ -86,6 +86,6 @@ void QF::UI::Window::Resize::hdl_Resize()
  /* Update window size */
  const QF::Utils::Vec2 _NewSize = (m_ParentWindow->g_AbsoluteMousePosition() - 
   m_ParentWindow->g_WindowPosition() + m_StartPosition);
-  
+
  m_ParentWindow->s_Size(_NewSize);
 }

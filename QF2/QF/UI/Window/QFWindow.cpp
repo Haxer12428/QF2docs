@@ -74,9 +74,50 @@
 		glfwSetWindowPos(m_Window, static_cast<int>(_New.x), static_cast<int>(_New.y));
 	}
 
+
+	/* Pass values lower than 0 to get NO_RESTRICT mode */
+	void QF::UI::Window::s_MaximalSize(const QF::Utils::Vec2& _New)
+	{
+		m_MaximalSize = _New; 
+	}
+
+	/* Still cannot be less than 1.0f, you can pass lower values but it will still equal to 1.0f*/
+	void QF::UI::Window::s_MinimalSize(const QF::Utils::Vec2& _New)
+	{
+		float _x, _y; 
+		/* Still cannot be less than 1 */
+		_x = _New.g_X();
+		_y = _New.g_Y();
+
+		_x = std::max(1.0f, _x);
+		_y = std::max(1.0f, _y);
+		/* Apply */
+		m_MinimalSize = {_x, _y};
+	}
+
+	/* Class limitations are applied */
 	void QF::UI::Window::s_Size(const QF::Utils::Vec2& _New) 
 	{
-		glfwSetWindowSize(m_Window, static_cast<int>(_New.g_X()), static_cast<int>(_New.g_Y()));
+		float _x, _y; 
+		_x = _New.g_X();
+		_y = _New.g_Y();
+
+		/* Limit */
+		float _mx, _my;
+		_mx = m_MaximalSize.g_X();
+		_my = m_MaximalSize.g_Y();
+
+		/* Finally, limit the final offsets */
+		_x = std::max(m_MinimalSize.g_X(), _x);
+		_y = std::max(m_MinimalSize.g_Y(), _y);
+
+		if (_mx > 0) _x = std::min(_mx, _y);
+		if (_my > 0) _y = std::min(_my, _y);
+
+		/* Apply */
+		const QF::Utils::Vec2 _NewSize = {_x, _y};
+
+		glfwSetWindowSize(m_Window, static_cast<int>(_NewSize.g_X()), static_cast<int>(_NewSize.g_Y()));
 	}
 
 	const QF::Utils::Vec2 QF::UI::Window::g_MousePosition() const
@@ -140,8 +181,13 @@
 
 		/* Make context current */
 		glfwMakeContextCurrent(m_Window);
+		
 		/* Set window pointer */
 		glfwSetWindowUserPointer(m_Window, this);
+
+		/* Apply minimal size for a GLFWwindow */
+		glfwSetWindowSizeLimits(m_Window, 100, 100, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
 		return true; 
 	}
 

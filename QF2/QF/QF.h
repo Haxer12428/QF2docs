@@ -327,7 +327,7 @@ namespace QF
 			Image(const std::filesystem::path& _PathToImage, bool _ModifyColor = false, const ImColor& _ImageColor = ImColor(255,255,255));
 			~Image();
 
-			ImTextureID g_GLTexture() const;
+			ImTextureID g_ImGuiTextureure() const;
 		private:
 			void func_LoadTexture();
 
@@ -581,6 +581,11 @@ namespace QF
 		class Window : public Element	
 		{
 		public:
+			enum Globals : int 
+			{
+				DONT_CARE = -1
+			};
+
 			class Resize 
 			{
 				public: 
@@ -721,6 +726,8 @@ namespace QF
 			void s_Position(const QF::Utils::Vec2& _New);
 			const QF::Utils::Vec2 g_MousePosition() const;
 			void s_Size(const QF::Utils::Vec2& _New);
+			void s_MinimalSize(const QF::Utils::Vec2& _Min);
+			void s_MaximalSize(const QF::Utils::Vec2& _Min);
 		/* Children handling */
 		public:
 			void im_NoLongerAChildren(Panel* _Panel);
@@ -757,7 +764,10 @@ namespace QF
 			Resize* m_Resize; 
 
 			ImGuiContext* m_Context; 
-		
+			
+			/* Maximal sizes */
+			QF::Utils::Vec2 m_MaximalSize = QF::Utils::Vec2( Globals::DONT_CARE, Globals::DONT_CARE ); /* Not not restricted */
+			QF::Utils::Vec2 m_MinimalSize = {100.0f, 100.0f}; /* Default for window at current stage */
 		};
 
 		class App
