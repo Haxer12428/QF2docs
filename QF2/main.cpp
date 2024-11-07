@@ -9,13 +9,31 @@ public:
  {
     g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(this,&Calculator::hk_Render);
    
+    func_CreateSlots();
+    m_Timer->Link(this);
+    m_Timer->Subscribe(this, &Calculator::hk_Timer);
+    m_Timer->func_Start(std::chrono::milliseconds(250), true);
+
+    printf("LINKED \n");
  }
 
+ void func_CreateSlots()
+ {
+    
+ }
+
+ void hk_Timer(QF::UI::EventSystem::TimerEvent& _EVt)
+ {
+  printf("call...\n");
+ }
 private:
  void hk_Render(QF::UI::EventSystem::RenderEvent& _Event) 
  {
-   std::cout << g_PositionOffset().g_String() << "\n";
+   
  } 
+
+ QF::UI::EventSystem::Timer* m_Timer = new QF::UI::EventSystem::Timer();
+ std::vector<QF::UI::Components::Button*> m_Buttons; 
 };
 
 class Application : public QF::UI::App

@@ -44,3 +44,65 @@
 	QF::UI::EventSystem::MouseButtonClickEvent::MouseButtonClickEvent(Panel* _Panel)
 		: MouseClickedEvent( _Panel, _Panel->g_AbsoluteParent()->g_MousePosition())
 	{};
+
+/* Timer class */
+	void	QF::UI::EventSystem::Timer::func_Start(const std::chrono::milliseconds& _Delay, const bool& _Once)
+	{
+		m_Started = true; 
+		m_Delay = _Delay;
+		m_Once = _Once;
+		m_StartedTime = std::chrono::high_resolution_clock::now();
+	}
+
+	void QF::UI::EventSystem::Timer::func_Stop()
+	{
+		m_Started = false; 
+	}
+
+	void QF::UI::EventSystem::Timer::func_Dispatch()
+	{
+		for (const auto& _Func : m_Listeners)
+		{
+			QF::UI::EventSystem::TimerEvent evt{};
+				_Func(evt);
+		}
+	}
+
+	void QF::UI::EventSystem::Timer::Link(QF::UI::Element* _Element)
+	{
+		if (_Element->g_Panel())
+		{
+			/* Panel link */
+			_Element->g_Panel()->g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(
+				this, &QF::UI::EventSystem::Timer::hk_LinkedLoop
+				);
+			/* Abort */
+			return; 
+		}
+	}
+
+	void QF::UI::EventSystem::Timer::hk_LinkedLoop(QF::UI::EventSystem::RenderEvent& _Evt) 
+	{
+		/* Check if started */
+		if (!m_Started) return;
+
+		std::chrono::high_resolution_clock::time_point _Now = 
+			std::chrono::high_resolution_clock::now();
+
+		std::chrono::milliseconds _WentBySinceStart = std::chrono::duration_cast<std::chrono::milliseconds>(
+			_Now - m_StartedTime
+		);
+
+		/* Check if can call dispatch */
+		if (!(m_Delay <= _WentBySinceStart)) return; 
+
+		/* Dispatch */
+		func_Dispatch();
+
+		/* Override params */
+		m_StartedTime = std::chrono::high_resolution_clock::now();
+
+		/* Override m_Started if only one call */
+		if (!m_Once) return;
+		m_Started = false; 
+	}

@@ -348,6 +348,7 @@ namespace QF
 	{
 		class Panel;
 		class Window;
+		class Element;
 
 		class Helpers
 		{ 
@@ -412,6 +413,43 @@ namespace QF
 			public:
 				MouseButtonClickEvent(Panel* _Panel);
 			};
+
+			class TimerEvent : public Event 
+			{
+				public:
+				TimerEvent() = default; 
+			};
+
+			class Timer 
+			{
+			public: 
+				Timer() = default; 
+				void func_Start(const std::chrono::milliseconds& _Delay, const bool& _Once = false);
+				void func_Stop(); 
+
+				void Link(QF::UI::Element* _Element);
+
+				template<typename __Class>
+				void Subscribe(__Class* _Instance, 
+					void (__Class::* _Member)(QF::UI::EventSystem::TimerEvent&)
+					)
+				{
+					m_Listeners.push_back([=](QF::UI::EventSystem::TimerEvent _Event) {
+        (_Instance->*_Member)(_Event);
+    	});
+				}
+			private:
+				void func_Dispatch();
+				void hk_LinkedLoop(QF::UI::EventSystem::RenderEvent& _Evt);
+			private:
+				std::vector<std::function<void(QF::UI::EventSystem::TimerEvent&)>> m_Listeners;
+
+				bool m_Started = false; 
+				bool m_Once = false; 
+				std::chrono::high_resolution_clock::time_point m_StartedTime;
+				std::chrono::milliseconds m_Delay;
+			};
+
 		/* Event handler */
 			class EventHandler {
 			private:
