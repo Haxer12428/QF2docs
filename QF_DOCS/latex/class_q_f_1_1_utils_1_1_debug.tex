@@ -1,0 +1,54 @@
+\doxysection{QF\+::Utils\+::Debug Class Reference}
+\hypertarget{class_q_f_1_1_utils_1_1_debug}{}\label{class_q_f_1_1_utils_1_1_debug}\index{QF::Utils::Debug@{QF::Utils::Debug}}
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_adebcac04671c1bf98c21991b3250deec}\label{class_q_f_1_1_utils_1_1_debug_adebcac04671c1bf98c21991b3250deec} 
+enum class {\bfseries Log\+Hint} \+: int \{ \newline
+{\bfseries CRITICAL\+\_\+\+ERROR}
+, {\bfseries WARNING}
+, {\bfseries MESSAGE}
+, {\bfseries IMPORTANT}
+, \newline
+{\bfseries EXCEPTION}
+ \}
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_a90e28ec25fe5254bcfe7aae1f1996c85}\label{class_q_f_1_1_utils_1_1_debug_a90e28ec25fe5254bcfe7aae1f1996c85} 
+enum class {\bfseries Print\+Hint} \+: int \{ \newline
+{\bfseries PRINT\+\_\+\+EXCEPTION}
+, {\bfseries PRINT\+\_\+\+CRITICAL\+\_\+\+ERROR}
+, {\bfseries PRINT\+\_\+\+WARNING}
+, {\bfseries PRINT\+\_\+\+MESSAGE}
+, \newline
+{\bfseries PRINT\+\_\+\+IMPORTANT}
+, {\bfseries PRINT\+\_\+\+WITH\+\_\+\+COLORS}
+, {\bfseries PRINT\+\_\+\+TO\+\_\+\+FILE}
+, {\bfseries COUNT}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_aea439d44362cd079467e606ee34cbfd7}\label{class_q_f_1_1_utils_1_1_debug_aea439d44362cd079467e606ee34cbfd7} 
+void {\bfseries Insert} (Log\+Hint \+\_\+\+Log\+Hint, const std\+::string \&Name, const std\+::string \&\+\_\+\+Arguments)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_a1168877baeabf3b692b105dbd9af7215}\label{class_q_f_1_1_utils_1_1_debug_a1168877baeabf3b692b105dbd9af7215} 
+static void {\bfseries s\+\_\+\+Global\+Debug\+Print\+Hint} (Print\+Hint \+\_\+\+Hint, const bool \&\+\_\+\+Value)
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_a3c2e8479aefdf0397fe608e39108e448}\label{class_q_f_1_1_utils_1_1_debug_a3c2e8479aefdf0397fe608e39108e448} 
+static void {\bfseries s\+\_\+\+Multiple\+Global\+Debug\+Print\+Hints} (const std\+::vector$<$ Print\+Hint $>$ \&\+\_\+\+Hints, const bool \&\+\_\+\+Value)
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_a077b242e8870e498a172f5893ef470af}\label{class_q_f_1_1_utils_1_1_debug_a077b242e8870e498a172f5893ef470af} 
+static void {\bfseries global\+\_\+\+Initialize\+Hints} ()
+\item 
+\Hypertarget{class_q_f_1_1_utils_1_1_debug_af4e63abbc9c483fe044ef2bd4ec176fb}\label{class_q_f_1_1_utils_1_1_debug_af4e63abbc9c483fe044ef2bd4ec176fb} 
+static void {\bfseries s\+\_\+\+Global\+Log\+File\+Path} (const std\+::filesystem\+::path \&\+\_\+\+Path)
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+QF2/\+QF/QF.\+h\end{DoxyCompactItemize}
