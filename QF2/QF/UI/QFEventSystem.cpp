@@ -70,15 +70,28 @@
 
 	void QF::UI::EventSystem::Timer::Link(QF::UI::Element* _Element)
 	{
+		QF::UI::EventSystem::EventHandler* _EventHandler;
+
+		/* Panel link */
 		if (_Element->g_Panel())
+		{ _EventHandler = _Element->g_Panel()->g_EventHandler(); }
+
+		/* Window link */
+		if (_Element->g_Window()) 
+		{ _EventHandler = _Element->g_Window()->g_EventHandler(); }
+
+		/* Case: event handler is nullptr */
+		if (_EventHandler == nullptr)
 		{
-			/* Panel link */
-			_Element->g_Panel()->g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(
-				this, &QF::UI::EventSystem::Timer::hk_LinkedLoop
-				);
-			/* Abort */
+			/* Log debug & abort */
+			QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::CRITICAL_ERROR, __FUNCTION__, 
+				"Unable to link timer, event handler == nullptr;");
 			return; 
 		}
+		/* Link to render event of given event handler */
+		_EventHandler->Subscribe<QF::UI::EventSystem::RenderEvent>(
+				this, &QF::UI::EventSystem::Timer::hk_LinkedLoop
+				);
 	}
 
 	void QF::UI::EventSystem::Timer::hk_LinkedLoop(QF::UI::EventSystem::RenderEvent& _Evt) 

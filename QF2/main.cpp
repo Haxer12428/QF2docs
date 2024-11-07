@@ -10,11 +10,11 @@ public:
     g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(this,&Calculator::hk_Render);
    
     func_CreateSlots();
-    m_Timer->Link(this);
+    m_Timer->Link(this->g_AbsoluteParent());
     m_Timer->Subscribe(this, &Calculator::hk_Timer);
-    m_Timer->func_Start(std::chrono::milliseconds(250), true);
+    m_Timer->func_Start(std::chrono::milliseconds(250));
 
-    printf("LINKED \n");
+    printf("LINKED to window \n");
  }
 
  void func_CreateSlots()
@@ -24,7 +24,7 @@ public:
 
  void hk_Timer(QF::UI::EventSystem::TimerEvent& _EVt)
  {
-  printf("call...\n");
+  printf("call from window evt handler\n");
  }
 private:
  void hk_Render(QF::UI::EventSystem::RenderEvent& _Event) 

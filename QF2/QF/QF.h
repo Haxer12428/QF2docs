@@ -774,6 +774,7 @@ namespace QF
 			void s_MinimalSize(const QF::Utils::Vec2& _Min);
 			void s_MaximalSize(const QF::Utils::Vec2& _Min);
 			QF::UI::Window::TitleBar* g_TitleBarInstance();
+			QF::UI::EventSystem::EventHandler* g_EventHandler();
 		/* Children handling */
 		public:
 			void im_NoLongerAChildren(Panel* _Panel);

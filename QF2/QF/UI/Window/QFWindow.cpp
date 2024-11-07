@@ -77,6 +77,12 @@
 	QF::UI::Window::TitleBar* QF::UI::Window::g_TitleBarInstance() 
 	{ return m_TitleBar; }
 
+	/* Returns event handler of the class */
+	QF::UI::EventSystem::EventHandler* QF::UI::Window::g_EventHandler() 
+	{
+		return m_EventHandler;
+	}
+
 	/* Pass values lower than 0 to get NO_RESTRICT mode */
 	void QF::UI::Window::s_MaximalSize(const QF::Utils::Vec2& _New)
 	{
