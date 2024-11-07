@@ -4,6 +4,7 @@ std::unordered_map<QF::Utils::Debug::PrintHint, bool> QF::Utils::Debug::m_Global
 bool QF::Utils::Debug::m_GlobalDebugHintsInitialized = false; 
 std::filesystem::path QF::Utils::Debug::m_GlobalLogFilePath = "C:\\QF\\debug.log";
 std::once_flag QF::Utils::Debug::m_InitializerInitOnceFlag;
+std::string QF::Utils::Debug::m_LastException = __QF_EMPTY_STRING;
 
 /*========================= Constructor  =========================*/
 	QF::Utils::Debug::Debug() = default;
@@ -160,6 +161,8 @@ std::once_flag QF::Utils::Debug::m_InitializerInitOnceFlag;
 			return "\033[93m";
 		case QF::Utils::Debug::LogHint::IMPORTANT:
 			return "\033[1;33m";
+		case QF::Utils::Debug::LogHint::EXCEPTION:
+			return "\033[1;31m";
 		default:
 			return __QF_EMPTY_STRING;
 		}
@@ -195,6 +198,13 @@ std::once_flag QF::Utils::Debug::m_InitializerInitOnceFlag;
 		const bool _Print = m_GlobalDebugPrintHints.find(
 			m_PrintHintMap.find(_Hint)->second
 		)->second;
+
+		/* Check if its exception */
+		if (_Hint == LogHint::EXCEPTION)
+		{
+			/* Log as last */
+			m_LastException = _Arguments;
+		}
 
 		/* Check if should print */
 		if (_Print == false) return; 

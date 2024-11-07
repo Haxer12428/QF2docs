@@ -1,61 +1,21 @@
 #include "QF/QF.h"
-#include <thread>
 
 
-/**
- * Replaces line endings in the input string with the specified replacement string.
- *
- * @param input The input string where line endings are to be replaced.
- * @param replacement The string to replace line endings with.
- * @return A new string with line endings replaced by the specified replacement.
- */
-std::string ReplaceLineEndings(const std::string& input, const std::string& replacement) {
-    std::string output;
-    // Preallocate memory for output to improve performance
-    output.reserve(input.size() + input.size() / 2 * (replacement.size() - 1));
-
-    auto outputIterator = std::back_inserter(output);
-    auto inputIterator = input.begin();
-    auto inputEnd = input.end();
-
-    while (inputIterator != inputEnd) {
-        if (*inputIterator == '\r') {
-            // Replace '\r' or '\r\n' with the replacement string
-            std::copy(replacement.begin(), replacement.end(), outputIterator);
-            ++inputIterator;
-            if (inputIterator != inputEnd && *inputIterator == '\n') {
-                ++inputIterator; // Skip '\n' if it's part of '\r\n'
-            }
-        } else {
-            *outputIterator++ = *inputIterator; // Copy non-line-ending characters
-        }
-        ++inputIterator;
-    }
-
-    return output;
-}
-
-class MyPanel : public QF::UI::Panel
+class Calculator : public QF::UI::Panel
 {
 public:
-	MyPanel(QF::UI::Element* _Parent) : QF::UI::Panel(_Parent, { 50, 50 }, { 20, 20 })
-	{
-		g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(this, &MyPanel::renderDispatched);
-		m_Image = new QF::Utils::Image("C:\\QF\\iconclose.png");
+ Calculator(QF::UI::Window* _Window)
+    : QF::UI::Panel(_Window, {0, 0}, _Window->g_Size())
+ {
+    g_EventHandler()->Subscribe<QF::UI::EventSystem::RenderEvent>(this,&Calculator::hk_Render);
+   
+ }
 
-	}
-
-	void renderDispatched(QF::UI::EventSystem::RenderEvent& _Evt)
-	{
-		ImDrawList* _DrawList = ImGui::GetWindowDrawList();	
-
-		
-	}
-
-	std::vector<QF::UI::Panel*> m_Buttons;
-	QF::Utils::Image* m_Image; 
-	std::chrono::high_resolution_clock::time_point _Now = std::chrono::high_resolution_clock::now();
-	int _BuildPanels = 0;
+private:
+ void hk_Render(QF::UI::EventSystem::RenderEvent& _Event) 
+ {
+   std::cout << g_PositionOffset().g_String() << "\n";
+ } 
 };
 
 class Application : public QF::UI::App
@@ -65,11 +25,7 @@ public:
 
 	bool on_Init() override
 	{
-		
-
-		QF::UI::Window* _Window4 = new QF::UI::Window(this, "QF4");
-		MyPanel* panel = new MyPanel(_Window4);
-	
+		new Calculator(new QF::UI::Window(this, "QF testing: Calculator"));
 	
 		return true; 
 	}
@@ -93,7 +49,8 @@ int main()
             QF::Utils::Debug::PrintHint::PRINT_WARNING,
             QF::Utils::Debug::PrintHint::PRINT_MESSAGE,
             QF::Utils::Debug::PrintHint::PRINT_WITH_COLORS,
-            QF::Utils::Debug::PrintHint::PRINT_IMPORTANT
+            QF::Utils::Debug::PrintHint::PRINT_IMPORTANT,
+            QF::Utils::Debug::PrintHint::PRINT_EXCEPTION
         }, true
     );
 

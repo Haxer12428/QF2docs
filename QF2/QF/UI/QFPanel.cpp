@@ -41,6 +41,8 @@ QF::UI::Panel::Panel(Element* _Parent,
 
 		QF::Utils::Debug().Insert(QF::Utils::Debug::LogHint::IMPORTANT, __FUNCTION__,
 		"Panel is waiting for stack assigment.");
+	/* Assign render event to menager */
+	m_EventHandler->Subscribe<QF::UI::EventSystem::RenderEvent>(this, &QF::UI::Panel::hk_PreRenderUpdateOffsets);
 }
 
 void QF::UI::Panel::Destroy()
@@ -89,7 +91,8 @@ void QF::UI::Panel::func_UpdatePositionOffset()
 	/* Parent is window */
 	if (_ParentingPanel == nullptr)
 	{
-		m_PositionOffset = m_Position;
+		m_PositionOffset = (QF::Utils::Vec2{0.0f, g_AbsoluteParent()->g_TitleBarInstance()->g_Size().g_Y()}
+			+ m_Position);
 		return;
 	}
 	m_PositionOffset = (_ParentingPanel->g_PositionOffset() + m_Position);
@@ -239,6 +242,11 @@ QF::UI::EventSystem::EventHandler* QF::UI::Panel::g_EventHandler()
 	return m_EventHandler;
 }
 
+void QF::UI::Panel::hk_PreRenderUpdateOffsets(QF::UI::EventSystem::RenderEvent& _Event)
+{
+	/* Update all depended in order to fix for title bar changes etc */;
+	func_UpdateAllDependent();
+}
 /*========================= Getting Offsets  =========================*/
 const QF::Utils::Vec2 QF::UI::Panel::g_Position() const
 {

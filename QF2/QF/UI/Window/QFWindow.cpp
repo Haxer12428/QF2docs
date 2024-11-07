@@ -74,6 +74,8 @@
 		glfwSetWindowPos(m_Window, static_cast<int>(_New.x), static_cast<int>(_New.y));
 	}
 
+	QF::UI::Window::TitleBar* QF::UI::Window::g_TitleBarInstance() 
+	{ return m_TitleBar; }
 
 	/* Pass values lower than 0 to get NO_RESTRICT mode */
 	void QF::UI::Window::s_MaximalSize(const QF::Utils::Vec2& _New)
@@ -110,6 +112,7 @@
 		/* Finally, limit the final offsets */
 		_x = std::max(m_MinimalSize.g_X(), _x);
 		_y = std::max(m_MinimalSize.g_Y(), _y);
+
 
 		if (_mx > 0) _x = std::min(_mx, _y);
 		if (_my > 0) _y = std::min(_my, _y);

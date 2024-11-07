@@ -64,7 +64,7 @@ namespace QF
 			static const std::string g_CurrentTimestamp(const std::string& _Format); 
 		};
 
-	
+
 
 		/*========================= Debug =========================*/
 		class Debug
@@ -78,11 +78,13 @@ namespace QF
 				CRITICAL_ERROR,
 				WARNING,
 				MESSAGE,
-				IMPORTANT
+				IMPORTANT,
+				EXCEPTION
 			};
 
 			enum class PrintHint : int
 			{
+				PRINT_EXCEPTION,
 				PRINT_CRITICAL_ERROR,
 				PRINT_WARNING,
 				PRINT_MESSAGE,
@@ -98,6 +100,7 @@ namespace QF
 				{ LogHint::MESSAGE, PrintHint::PRINT_MESSAGE },
 				{ LogHint::WARNING, PrintHint::PRINT_WARNING },
 				{ LogHint::IMPORTANT, PrintHint::PRINT_IMPORTANT },
+				{ LogHint::EXCEPTION, PrintHint::PRINT_EXCEPTION }
 			};
 
 			const std::map<LogHint, std::string> m_LogHintMap =
@@ -106,12 +109,15 @@ namespace QF
 				__QF_ENUM_STRING_TO_CASE(LogHint::MESSAGE),
 				__QF_ENUM_STRING_TO_CASE(LogHint::WARNING),
 				__QF_ENUM_STRING_TO_CASE(LogHint::IMPORTANT),
+				__QF_ENUM_STRING_TO_CASE(LogHint::EXCEPTION)
 			};
 
 			static std::unordered_map<PrintHint, bool> m_GlobalDebugPrintHints;
 			static bool m_GlobalDebugHintsInitialized;
 			static std::filesystem::path m_GlobalLogFilePath;
 			static std::once_flag m_InitializerInitOnceFlag;
+
+			static std::string m_LastException;
 		public:
 			static void s_GlobalDebugPrintHint(PrintHint _Hint, const bool& _Value);
 			static void s_MultipleGlobalDebugPrintHints(const std::vector<PrintHint>& _Hints, const bool& _Value);
@@ -522,6 +528,7 @@ namespace QF
 			void s_Size(const QF::Utils::Vec2 _Size);
 			void s_Visible(const bool& _State);
 		private:
+			void hk_PreRenderUpdateOffsets(QF::UI::EventSystem::RenderEvent& _Event); 
 			void func_EraseChildren();
 		public:
 			void func_EraseNullChildren();
@@ -728,6 +735,7 @@ namespace QF
 			void s_Size(const QF::Utils::Vec2& _New);
 			void s_MinimalSize(const QF::Utils::Vec2& _Min);
 			void s_MaximalSize(const QF::Utils::Vec2& _Min);
+			QF::UI::Window::TitleBar* g_TitleBarInstance();
 		/* Children handling */
 		public:
 			void im_NoLongerAChildren(Panel* _Panel);
